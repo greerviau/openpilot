@@ -2,7 +2,7 @@ import math
 
 from selfdrive.controls.lib.pid import PIController
 from selfdrive.controls.lib.drive_helpers import get_steer_max
-from selfdrive.controls.lib.latcontrol import LatControl
+from selfdrive.controls.lib.latcontrol import LatControl, MIN_CTRL_SPEED
 from cereal import log
 
 
@@ -27,7 +27,7 @@ class LatControlPID(LatControl):
     angle_steers_des = angle_steers_des_no_offset + params.angleOffsetDeg
 
     pid_log.angleError = angle_steers_des - CS.steeringAngleDeg
-    if CS.vEgo < 0.3 or not active:
+    if CS.vEgo < MIN_CTRL_SPEED or not active:
       output_steer = 0.0
       pid_log.active = False
       self.pid.reset()
