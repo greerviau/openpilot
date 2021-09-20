@@ -92,11 +92,9 @@ class CarInterface(CarInterfaceBase):
       ret.minSpeedCan = 0.1 * CV.KPH_TO_MS
       tire_stiffness_factor = 0.444  # not optimized yet
       ret.mass = 2860. * CV.LB_TO_KG + STD_CARGO_KG  # mean between normal and hybrid
-
-      ret.lateralTuning.init('model')
-      ret.lateralTuning.model.name = "corolla_model_v5"
-      ret.lateralTuning.model.useRates = False  # TODO: makes model sluggish, see comments in latcontrol_model.py
-      ret.lateralTuning.model.multiplier = 1.
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2], [0.02]]
+      ret.lateralTuning.pid.kf = 0.000062  # full torque for 20 deg at 80mph means 0.00007818594
+      ret.lateralTuning.pid.newKfTuned = True
 
     elif candidate == CAR.LEXUS_RX:
       stop_and_go = True

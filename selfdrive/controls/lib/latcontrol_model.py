@@ -2,6 +2,7 @@ import math
 import numpy as np
 from common.basedir import BASEDIR
 from selfdrive.controls.lib.drive_helpers import get_steer_max
+from selfdrive.controls.lib.pid import PIDController
 from cereal import log
 from common.numpy_fast import clip, interp
 from common.realtime import DT_CTRL

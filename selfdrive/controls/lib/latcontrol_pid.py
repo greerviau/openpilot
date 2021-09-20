@@ -1,7 +1,9 @@
 import math
 
 from selfdrive.controls.lib.pid import PIDController
+from common.numpy_fast import interp, interp_2d
 from selfdrive.controls.lib.drive_helpers import get_steer_max
+from selfdrive.config import Conversions as CV
 from cereal import log
 
 
@@ -43,8 +45,17 @@ class LatControlPID():
         steer_feedforward *= CS.vEgo ** 2  # proportional to realigning tire momentum (~ lateral accel)
 
       deadzone = 0.0
-
       check_saturation = (CS.vEgo > 10) and not CS.steeringRateLimited and not CS.steeringPressed
+
+      # these relationships were observed from a model that learned how to apply torque for a toyota corolla
+
+      # relationship of pid gains from falling to rising
+      # ie. if desired angle is lower than current, that's falling
+      falling_to_rising = interp(abs(angle_steers_des), [5, 45, 90], [1, 0.5, .25])
+
+      k_p = interp_2d(CS.vEgo, abs(angle_steers_des), [[5 * CV.MPH_TO_MS, 14, 35], [5, 45, 90]], [[0.03782, 0.0393, 0.04109], [0.05125, 0.03968, 0.04059], [0.09008, 0.06022, 0.06583]])
+      self.pid.k_p = k_p * falling_to_rising
+
       output_steer = self.pid.update(angle_steers_des, CS.steeringAngleDeg, check_saturation=check_saturation, override=CS.steeringPressed,
                                      feedforward=steer_feedforward, speed=CS.vEgo, deadzone=deadzone)
       pid_log.active = True
