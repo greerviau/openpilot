@@ -20,38 +20,38 @@ def predict(x):
 
 
 lst = []
-for v_ego in [2, 13, 35]:
-  angle_steers_des = 30
-  # angle_steers = 10
-  # v_ego = 35 * MPH_TO_MS
+# for v_ego in [2, 13, 35]:
+angle_steers_des = 30
+# angle_steers = 10
+v_ego = 8 * MPH_TO_MS
 
 
-  # model doesn't like right curves so just use left
-  ff_left = predict([angle_steers_des, angle_steers_des, 0, 0, v_ego])[0]
-  _c1, _c2, _c3 = 0.35189607550172824, 7.506201251644202, 69.226826411091
-  print(ff_left / angle_steers_des / (_c1 * v_ego ** 2 + _c2 * v_ego + _c3))
-  # ff_right = -predict([-angle_steers_des, -angle_steers_des, 0, 0, v_ego])[0]
+# model doesn't like right curves so just use left
+ff_left = predict([angle_steers_des, angle_steers_des, 0, 0, v_ego])[0]
+_c1, _c2, _c3 = 0.35189607550172824, 7.506201251644202, 69.226826411091
+# print(ff_left / angle_steers_des / (_c1 * v_ego ** 2 + _c2 * v_ego + _c3))
+# ff_right = -predict([-angle_steers_des, -angle_steers_des, 0, 0, v_ego])[0]
 
 
-  angle_error = 5
+angle_error = 5
 
-  k_p_rising = [abs(ff_left - predict([angle_steers_des, angle_steers_des - angle_error, 0, 0, v_ego])[0]) / angle_error,
-                # abs(-ff_right - predict([-angle_steers_des, -angle_steers_des + angle_error, 0, 0, v_ego])[0]) / angle_error
-                ]
-  k_p_falling = [abs(ff_left - predict([angle_steers_des, angle_steers_des + angle_error, 0, 0, v_ego])[0]) / angle_error,
-                 # abs(-ff_right - predict([-angle_steers_des, -angle_steers_des - angle_error, 0, 0, v_ego])[0]) / angle_error
-                 ]
+k_p_rising = [abs(ff_left - predict([angle_steers_des, angle_steers_des - angle_error, 0, 0, v_ego])[0]) / angle_error,
+              # abs(-ff_right - predict([-angle_steers_des, -angle_steers_des + angle_error, 0, 0, v_ego])[0]) / angle_error
+              ]
+k_p_falling = [abs(ff_left - predict([angle_steers_des, angle_steers_des + angle_error, 0, 0, v_ego])[0]) / angle_error,
+               # abs(-ff_right - predict([-angle_steers_des, -angle_steers_des - angle_error, 0, 0, v_ego])[0]) / angle_error
+               ]
 
 
-  print('k_p_rising:')
-  print(f'rising mean: {round(np.mean(k_p_rising), 5)}')
-  lst.append(round(np.mean(k_p_rising), 5))
-  print(k_p_rising)
-  print()
-  print('k_p_falling:')
-  print(f'falling mean: {np.mean(k_p_falling)}')
-  print(k_p_falling)
+print('k_p_rising:')
+print(f'rising mean: {round(np.mean(k_p_rising), 5)}')
+lst.append(round(np.mean(k_p_rising), 5))
+print(k_p_rising)
+print()
+print('k_p_falling:')
+print(f'falling mean: {np.mean(k_p_falling)}')
+print(k_p_falling)
 
-  print('relationship from falling to rising: {}'.format(np.mean(k_p_falling) / np.mean(k_p_rising)))
-  print('======')
+print('relationship from falling to rising: {}'.format(np.mean(k_p_falling) / np.mean(k_p_rising)))
+print('======')
 # print(lst)

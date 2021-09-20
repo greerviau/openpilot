@@ -51,9 +51,12 @@ class LatControlPID():
 
       # relationship of pid gains from falling to rising
       # ie. if desired angle is lower than current, that's falling
-      falling_to_rising = interp(abs(angle_steers_des), [5, 45, 90], [1, 0.5, .25])
+      falling_to_rising = interp_2d(CS.vEgo, abs(angle_steers_des), [[5 * CV.MPH_TO_MS, 15 * CV.MPH_TO_MS, 30 * CV.MPH_TO_MS, 60 * CV.MPH_TO_MS],
+                                                                     [0, 30]], [[1., 0.1], [1., 0.2], [1., 0.5], [1., 1.]])
+      # falling_to_rising = interp(abs(angle_steers_des), [0, 30], [1, interp(CS.vEgo, [5, 15, 30, 60], [0.1, 0.2, 0.5, 1.])])  # this is the same as above, simplified
 
-      k_p = interp_2d(CS.vEgo, abs(angle_steers_des), [[5 * CV.MPH_TO_MS, 14, 35], [5, 45, 90]], [[0.03782, 0.0393, 0.04109], [0.05125, 0.03968, 0.04059], [0.09008, 0.06022, 0.06583]])
+      # k_p = interp_2d(CS.vEgo, abs(angle_steers_des), [[5 * CV.MPH_TO_MS, 14, 35], [5, 45, 90]], [[0.03782, 0.0393, 0.04109], [0.05125, 0.03968, 0.04059], [0.09008, 0.06022, 0.06583]])
+      k_p = interp(CS.vEgo, [5 * CV.MPH_TO_MS, 14, 35], [0.05, 0.08, 0.09])
       self.pid.k_p = k_p * falling_to_rising
 
       output_steer = self.pid.update(angle_steers_des, CS.steeringAngleDeg, check_saturation=check_saturation, override=CS.steeringPressed,
